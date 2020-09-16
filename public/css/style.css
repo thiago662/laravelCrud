@@ -1,5 +1,6 @@
 @charset "UTF-8";
 
+/*corpo*/
 body {
     background-color: #f5f5f5;
 }
@@ -8,6 +9,7 @@ body {
     background-color: #ffffff;
 }
 
+/*menu*/
 .navbar {
     background-color: #ffffff;
 }
@@ -24,6 +26,7 @@ body {
     color: #26A65B;
 }
 
+/*botões*/
 .btn {
     background-color: #4C2673;
     color: #ffffff;
@@ -32,6 +35,12 @@ body {
 .btn:hover {
     background-color: #ffffff;
     background-image: linear-gradient(to right, #a158eb, #11f36f);
+    color: #ffffff;
+}
+
+/*corpo*/
+.tb {
+    background-color: #4C2673;
     color: #ffffff;
 }
 
