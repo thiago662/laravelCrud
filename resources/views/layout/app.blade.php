@@ -31,6 +31,7 @@
     @endcomponent
 
     <script src="{{ asset('js/jquery.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
 
 </body>
 </html>
