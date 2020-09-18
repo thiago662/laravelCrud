@@ -12,5 +12,5 @@ const mix = require('laravel-mix');
  */
 
 mix//.copy('node_modules/bootstrap/dist/css/bootstrap.min.css', 'public/css')
-    //.js('node_modules/jquery/dist/jquery.min.js', 'public/js').sourceMaps()
-    .js('node_modules/bootstrap/dist/js/bootstrap.bundle.min.js', 'public/js').sourceMaps();
+    .js('node_modules/jquery/dist/jquery.min.js', 'public/js').sourceMaps();
+    //.js('node_modules/bootstrap/dist/js/bootstrap.bundle.min.js', 'public/js').sourceMaps();

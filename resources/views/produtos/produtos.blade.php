@@ -7,10 +7,16 @@
         <h2 class="h2">Lista de Produtos</h2>
     
     </div>
+    
+    <div class="row justify-content-center">
+
+        <button class="btn" role="button" data-toggle="modal" data-target="#dlgProdutos" onclick="novoProduto()">Nova produto</button>
+
+    </div>
 
     <div class="row justify-content-center">
 
-        <table class="table table-borderless table-hover">
+        <table class="table table-borderless table-hover" id="tbProdutos">
 
             <thead class="tb">
 
@@ -36,22 +42,10 @@
 
             <tbody>
 
-                <tr>
-
-
-
-                </tr>
-
             </tbody>
 
         </table>
     
-    </div>
-    
-    <div class="row justify-content-center">
-
-        <button class="btn" role="button" data-toggle="modal" data-target="#dlgProdutos">Nova produto</button>
-
     </div>
 
     <div class="modal" tabindex="-1" role="dialog" id="dlgProdutos">
@@ -66,7 +60,7 @@
 
                         <h5 class="modal-title">Novo Produto</h5>
 
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" id="close" data-dismiss="modal" aria-label="Close">
 
                             <span aria-hidden="true">&times;</span>
 
@@ -122,8 +116,6 @@
         
                                 <select id="produtoCategoria" class="form-control">
             
-                                        <option value=""></option>
-            
                                 </select>
 
                             </div>
@@ -136,7 +128,7 @@
 
                         <button type="submit" class="btn">Salvar</button>
 
-                        <button type="cancel" class="btn" data-dissmiss="modal">Cancelar</button>
+                        <button type="cancel" class="btn" data-dismiss="modal">Cancelar</button>
 
                     </div>
                 
@@ -147,5 +139,197 @@
         </div>
 
     </div>
+    
+@endsection
+
+@section('javascript')
+
+    <script type="text/javascript">
+
+        //token para o funcionamento do formulario
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            }
+        });
+
+        //atualizar
+        function atualizar() {
+
+            $('#tbProdutos>tbody>tr').remove();
+            carregarProdutos();
+
+        }
+
+        //zerar
+        function novoProduto(){
+            $("#id").val('');
+            $("#produtoNome").val('');
+            $("#produtoEstoque").val('');
+            $("#produtoPreco").val('');
+            $("#produtoCategoria").val('');
+        }
+
+        //carrega as categorias no select
+        function carregarCategorias() {
+
+            $.getJSON('/api/categorias', function(data){
+
+                console.log(data);
+
+                for( i = 0 ; i<data.length ; i++ ){
+
+                    opcao = '<option value = "' + data[i].id + '">' + data[i].nome + '</option>';
+                    $('#produtoCategoria').append(opcao);
+
+                }
+
+            });
+
+        }
+
+        //atualiza tabela
+        function montarLinha(p){
+
+            var linha = "<tr>" +
+                "<td>" + p.id + "</td>" +
+                "<td>" + p.nome + "</td>" +
+                "<td>" + p.estoque + "</td>" +
+                "<td>" + p.preco + "</td>" +
+                "<td>" + p.categoria_id + "</td>" +
+                "<td>" + '<button class="btn" role="button" data-toggle="modal" data-target="#dlgProdutos" onclick="editar(' + p.id + ')">Editar</button>' + "</td>" +
+                "<td>" + "<button class=\"btn\" onclick=\"remover(" + p.id + ")\">Apagar</button>" + "</td>" +
+                "</tr>";
+
+            return linha;
+        }
+        
+        //criar
+        function carregarProdutos() {
+
+            $.getJSON('/api/produtos', function(produtos){
+
+                console.log(produtos);
+
+                for( i = 0 ; i < produtos.length ; i++ ){
+
+                    linha = montarLinha(produtos[i]);
+
+                    $('#tbProdutos>tbody').append(linha);
+
+                }
+
+            });
+
+        }
+
+        //deletar
+        function remover(id){
+            $.ajax({
+                type: "DELETE",
+                url: "/api/produtos/" + id,
+                context: this,
+                success: function(){
+                    console.log('Apagou OK');
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            });
+
+            atualizar();
+        }
+
+        //editar
+        function editar(id){
+
+            $.getJSON('/api/produtos/' + id , function(produtos){
+
+                console.log(produtos);
+
+                $("#id").val(produtos.id);
+                $("#produtoNome").val(produtos.nome);
+                $("#produtoEstoque").val(produtos.estoque);
+                $("#produtoPreco").val(produtos.preco);
+                $("#produtoCategoria").val(produtos.categoria_id);
+
+            });
+
+        }
+
+        //salvar
+        function salvarProduto(){
+
+            pro = {
+                id: $("#id").val(),
+                nome: $("#produtoNome").val(),
+                estoque: $("#produtoEstoque").val(),
+                preco: $("#produtoPreco").val(),
+                categoria_id: $("#produtoCategoria").val()
+            };
+
+            $.ajax({
+                type: "PUT",
+                url: "/api/produtos/" + pro.id,
+                context: this,
+                data: pro,
+                success: function(){
+                    console.log('Salvou OK');
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            });
+
+        }
+
+        //cria objeto produto para auxiliar na inserção no banco de dados
+        function criarProduto(){
+            pro = { 
+                nome: $("#produtoNome").val(),
+                estoque: $("#produtoEstoque").val(),
+                preco: $("#produtoPreco").val(),
+                categoria_id: $("#produtoCategoria").val()
+            };
+
+            console.log(pro);
+
+            $.post("/api/produtos", pro, function(data){
+                console.log(data);
+            });
+
+        }
+
+        $("#formProduto").submit( function(event){
+
+            event.preventDefault();
+
+            if( $('#id').val() != '' ){
+
+                salvarProduto();
+                atualizar();
+
+            }else{
+
+                criarProduto();
+                atualizar();
+
+            }
+
+            $('#close').click();
+
+            //$("#dlgProdutos").modal('hide');
+
+        } );
+        
+        //metodo que carega as funções ao iniciar a pagina
+        $(function(){
+
+            carregarCategorias();
+            carregarProdutos();
+
+        })
+        
+    </script>
     
 @endsection

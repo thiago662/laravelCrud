@@ -31,7 +31,14 @@
     @endcomponent
 
     <script src="{{ asset('js/jquery.min.js') }}" type="text/javascript"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js" type="text/javascript"></script>-->
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
+
+    @hasSection ('javascript')
+
+        @yield('javascript')
+        
+    @endif
 
 </body>
 </html>

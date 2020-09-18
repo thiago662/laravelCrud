@@ -17,7 +17,7 @@
                         Só não se esqueça de cadastrar previamente as categorias.
                     </p>
 
-                    <a href="{{ route('produtos.create') }}" class="btn">Cadastre seus produtos</a>
+                    <a href="{{ route('produtos') }}" class="btn">Cadastre seus produtos</a>
 
                 </div>
 

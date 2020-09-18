@@ -13,11 +13,19 @@ class ControladorProduto extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index()
     {
-        //
+        //utilizando api
         $pro = Produto::all();
-        return view('produtos/produtos', compact('pro'));
+        return $pro->toJson();
+
+    }
+
+    public function indexView()
+    {
+        //utilizando api
+        return view('produtos/produtos');
 
     }
 
@@ -46,13 +54,14 @@ class ControladorProduto extends Controller
         $pro = new Produto();
 
         $pro = Produto::create([
-            "nome" => $request->input('produtoNome'),
-            "estoque" => $request->input('produtoEstoque'),
-            "preco" => $request->input('produtoPreco'),
-            "categoria_id" => $request->input('produtoCategoria')
+            "nome" => $request->input('nome'),
+            "estoque" => $request->input('estoque'),
+            "preco" => $request->input('preco'),
+            "categoria_id" => $request->input('categoria_id')
         ]);
 
-        return redirect()->route('produtos.index');
+        //return redirect()->route('produtos');
+        return json_encode($pro);
 
     }
 
@@ -65,6 +74,18 @@ class ControladorProduto extends Controller
     public function show($id)
     {
         //
+        $pro = Produto::find($id);
+
+        if( isset($pro) ){
+
+            return json_encode($pro);
+
+        }else{
+
+            return response('Produto não encontrado', 4004);
+            
+        }
+
     }
 
     /**
@@ -87,7 +108,25 @@ class ControladorProduto extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //atualizando
+        $pro = Produto::find($id);
+
+        if( isset($pro) ){
+            $pro->nome = $request->input('nome');
+            $pro->estoque = $request->input('estoque');
+            $pro->preco = $request->input('preco');
+            $pro->categoria_id = $request->input('categoria_id');
+
+            $pro->save();
+
+            return json_encode($pro);
+
+        }else{
+
+            return response('Produto não encontrado', 4004);
+
+        }
+
     }
 
     /**
@@ -98,6 +137,15 @@ class ControladorProduto extends Controller
      */
     public function destroy($id)
     {
-        //
+        //deletando com api
+        $pro = Produto::find($id);
+
+        if(isset($pro)){
+            $pro->delete();
+            return response('OK', 200);
+        }else{
+            return response('Produto não encontrado', 4004);
+        }
+
     }
 }
